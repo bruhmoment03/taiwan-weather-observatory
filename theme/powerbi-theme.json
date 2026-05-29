@@ -1,0 +1,19 @@
+{
+  "name": "Taiwan Weather Observatory",
+  "dataColors": ["#2166ac", "#4393c3", "#92c5de", "#f4a582", "#d6604d", "#b2182b", "#8a877f"],
+  "background": "#fbfaf7",
+  "foreground": "#1a1916",
+  "tableAccent": "#c0392b",
+  "good": "#2166ac",
+  "neutral": "#8a877f",
+  "bad": "#b2182b",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{ "color": { "solid": { "color": "#ffffff" } } }],
+        "border": [{ "color": { "solid": { "color": "#e7e3da" } }, "radius": 8 }],
+        "title": [{ "fontColor": { "solid": { "color": "#1a1916" } }, "fontFamily": "Segoe UI Semibold", "fontSize": 12 }]
+      }
+    }
+  }
+}
