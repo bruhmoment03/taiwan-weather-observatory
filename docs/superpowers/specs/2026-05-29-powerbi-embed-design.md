@@ -3,6 +3,10 @@
 **Date:** 2026-05-29 · **Author credit:** made by Speedo
 **Project:** Taiwan Weather Observatory (`D:\bi-final`)
 
+> Presentation modeled on the reference repo `hminmis-max/tw-weather`: a simple page
+> with a dark header, centered Chinese title, a full-width Power BI publish-to-web
+> `<iframe src="https://app.powerbi.com/view?r=...">`, and a CWA source footer.
+
 ## Context
 The dashboard at https://bruhmoment03.github.io/taiwan-weather-observatory/ is a
 custom web app — *styled* like a BI tool but not actual Microsoft Power BI. The user
@@ -16,7 +20,8 @@ Confirmed decisions:
   (Power BI Desktop is a GUI the assistant cannot operate; this also avoids brittle
   hand-authored `.pbix`/`.pbip` files).
 - **Lives in the current repo**: new `powerbi.html` embed page + `POWERBI.md` guide + nav link.
-- **Bilingual framing**: 台灣天氣即時儀表板 (Power BI) / Taiwan Real-time Weather Dashboard, made by Speedo.
+- **Chinese framing, reference page style**: dark `#1f2937` header, centered Chinese title
+  台灣天氣即時儀表板 (Power BI), tagline "Power BI + CWA Open Data API", CWA source footer.
 - Personal Power BI account + Desktop (so "Publish to web" public embed is available).
 
 ## Hard constraints
@@ -39,7 +44,7 @@ Cloudflare Worker (taiwan-weather-proxy.ii96391799.workers.dev)
         public iframe URL
             │
             ▼  pasted into js/powerbi-embed.js
-   GitHub Pages: powerbi.html  (iframe + bilingual header), nav link from index.html
+   GitHub Pages: powerbi.html  (iframe + dark Chinese header), nav link from index.html
 ```
 
 ## Components
@@ -76,9 +81,11 @@ Editorial light look matching the site. Visuals:
 - Optional page 2: single-station 24h drill.
 - `theme/powerbi-theme.json`: paper/ink palette + blue→red temperature data colours.
 
-### 4. Embed page (assistant builds) — `powerbi.html`, `js/powerbi-embed.js`, `css` reuse
-- Bilingual header: 台灣天氣即時儀表板 (Power BI) / Taiwan Real-time Weather Dashboard · made by Speedo.
-- Responsive 16:9 iframe wrapper; the embed URL kept in `js/powerbi-embed.js` (one place to update).
+### 4. Embed page (assistant builds) — `powerbi.html`, `js/powerbi-embed.js`
+- Reference-style page: dark `#1f2937` header, centered Chinese title 台灣天氣即時儀表板
+  (Power BI), tagline "Power BI + CWA Open Data API", "made by Speedo" line,
+  full-width responsive iframe, footer 資料來源：中央氣象署（CWA）開放資料平台.
+- The publish-to-web embed URL kept in `js/powerbi-embed.js` (one place to update).
 - Until the URL is supplied: a styled placeholder card ("Report publishing — embed pending").
 - Add **"Power BI"** link to the nav in `index.html`; add a back-link to the main dashboard.
 
