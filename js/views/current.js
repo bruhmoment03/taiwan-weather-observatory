@@ -23,7 +23,11 @@ export function initCurrent() {
 
 function renderMeta() {
   const m = data.meta;
-  $("updated-text").textContent = m.last_updated_taipei || "—";
+  const tag = data.source === "live" ? "Live" : "Cached";
+  $("updated-text").textContent = `${tag} · ${m.last_updated_taipei || "—"}`;
+  // Amber dot when serving committed fallback data instead of the live proxy.
+  const dot = document.querySelector(".updated__dot");
+  if (dot && data.source !== "live") dot.style.background = "#d99a2b";
   const start = (m.window_start || "").slice(5, 16).replace("T", " ");
   const end = (m.window_end || "").slice(5, 16).replace("T", " ");
   $("window-label").textContent = start && end ? `${start} → ${end} (UTC+8)` : "—";

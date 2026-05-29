@@ -1,0 +1,15 @@
+{
+  "name": "taiwan-weather-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker that proxies and shapes CWA weather data for the Taiwan Weather Observatory dashboard.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "secret": "wrangler secret put CWA_API_KEY"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

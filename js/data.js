@@ -1,18 +1,38 @@
 // Data loading, the temperature colour scale, and shared formatters.
 
-const DATA = { meta: null, latest: [], byId: {}, timeseries: {} };
+import { LIVE_URL } from "./config.js";
+
+const DATA = { meta: null, latest: [], byId: {}, timeseries: {}, source: "cached" };
 
 export async function loadAll() {
-  const bust = `?v=${Math.floor(Date.now() / 60000)}`; // 1-min cache-bust
-  const [meta, latest, timeseries] = await Promise.all([
-    fetchJSON(`./data/meta.json${bust}`),
-    fetchJSON(`./data/latest.json${bust}`),
-    fetchJSON(`./data/timeseries.json${bust}`),
-  ]);
-  DATA.meta = meta;
-  DATA.latest = latest;
-  DATA.timeseries = timeseries;
-  DATA.byId = Object.fromEntries(latest.map((s) => [s.id, s]));
+  let payload = null;
+
+  // 1. Prefer the live Worker proxy (fresh data, key kept server-side).
+  if (LIVE_URL) {
+    try {
+      payload = await fetchJSON(`${LIVE_URL}?t=${Math.floor(Date.now() / 60000)}`);
+      DATA.source = "live";
+    } catch (e) {
+      console.warn("Live source unavailable, falling back to committed data:", e.message);
+    }
+  }
+
+  // 2. Fall back to the JSON committed in the repo so the site never goes blank.
+  if (!payload) {
+    const bust = `?v=${Math.floor(Date.now() / 60000)}`;
+    const [meta, latest, timeseries] = await Promise.all([
+      fetchJSON(`./data/meta.json${bust}`),
+      fetchJSON(`./data/latest.json${bust}`),
+      fetchJSON(`./data/timeseries.json${bust}`),
+    ]);
+    payload = { meta, latest, timeseries };
+    DATA.source = "cached";
+  }
+
+  DATA.meta = payload.meta;
+  DATA.latest = payload.latest;
+  DATA.timeseries = payload.timeseries;
+  DATA.byId = Object.fromEntries(payload.latest.map((s) => [s.id, s]));
   return DATA;
 }
 
