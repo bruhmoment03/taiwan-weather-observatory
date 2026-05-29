@@ -2,6 +2,7 @@
 
 import { data, tempColor, fmt, fmtClock } from "../data.js";
 import { getState, setStation, setRegions, subscribe } from "../state.js";
+import { regionLabel } from "../i18n.js";
 
 const REGIONS = ["North", "Central", "South", "East", "Islands"];
 let map, markers = {}, activeRegions = new Set(REGIONS);
@@ -20,7 +21,7 @@ export function initMap() {
     if (s.lat == null) continue;
     const m = L.circleMarker([s.lat, s.lon], markerStyle(s, false))
       .addTo(map)
-      .bindTooltip(s.name_en, { direction: "top", offset: [0, -4] })
+      .bindTooltip(s.name, { direction: "top", offset: [0, -4] })
       .bindPopup(popupHTML(s), { className: "station-pop", closeButton: false });
     m.on("click", () => setStation(s.id));
     markers[s.id] = m;
@@ -51,10 +52,10 @@ function markerStyle(s, active) {
 
 function popupHTML(s) {
   return `<div class="station-pop">
-      <b>${s.name_en}</b> <span class="pop-row">${s.name}</span><br/>
+      <b>${s.name}</b> <span class="pop-row">${s.name_en}</span><br/>
       <span class="pop-t" style="color:${tempColor(s.temp)}">${fmt(s.temp)}°C</span>
-      <div class="pop-row">Humidity ${fmt(s.humidity, 0)}% · Wind ${fmt(s.wind)} m/s</div>
-      <div class="pop-row">${fmt(s.elevation_m, 0)} m · ${s.county}</div>
+      <div class="pop-row">濕度 ${fmt(s.humidity, 0)}% · 風速 ${fmt(s.wind)} m/s</div>
+      <div class="pop-row">海拔 ${fmt(s.elevation_m, 0)} m · ${s.county}</div>
       <div class="pop-row">${fmtClock(s.obs_time)}</div>
     </div>`;
 }
@@ -77,8 +78,8 @@ function buildRegionFilters() {
     b.addEventListener("click", () => toggleRegion(region, b));
     return b;
   };
-  wrap.appendChild(make("All", null));
-  for (const r of REGIONS) wrap.appendChild(make(r, r));
+  wrap.appendChild(make("全部", null));
+  for (const r of REGIONS) wrap.appendChild(make(regionLabel(r), r));
   syncChips();
 }
 

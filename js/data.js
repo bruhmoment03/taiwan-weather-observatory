@@ -88,11 +88,11 @@ export function fmtTimeLabel(iso) {
 }
 
 export function fmtClock(iso) {
-  // -> "Wed 13:00"
+  // -> "週三 13:00"
   if (!iso) return "—";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return fmtTimeLabel(iso);
-  const day = d.toLocaleDateString("en-US", { weekday: "short", timeZone: "Asia/Taipei" });
+  const day = d.toLocaleDateString("zh-TW", { weekday: "short", timeZone: "Asia/Taipei" });
   const t = fmtTimeLabel(iso);
   return `${day} ${t}`;
 }

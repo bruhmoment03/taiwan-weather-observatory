@@ -4,11 +4,11 @@ import { data, tempColor, fmtTimeLabel } from "../data.js";
 import { getState, setMetric, subscribe } from "../state.js";
 
 const METRICS = [
-  { key: "temp", label: "Temperature", unit: "°C" },
-  { key: "humidity", label: "Humidity", unit: "%" },
-  { key: "pressure", label: "Pressure", unit: "hPa" },
-  { key: "wind", label: "Wind", unit: "m/s" },
-  { key: "precip", label: "Precipitation", unit: "mm" },
+  { key: "temp", label: "氣溫", unit: "°C" },
+  { key: "humidity", label: "濕度", unit: "%" },
+  { key: "pressure", label: "氣壓", unit: "hPa" },
+  { key: "wind", label: "風速", unit: "m/s" },
+  { key: "precip", label: "降水", unit: "mm" },
 ];
 
 let chart;
@@ -69,10 +69,10 @@ function render() {
   const metric = METRICS.find((m) => m.key === st.metric) || METRICS[0];
   if (!station || !series) return;
 
-  document.getElementById("trend-station-name").textContent = station.name_en;
+  document.getElementById("trend-station-name").textContent = station.name;
   document.querySelector("#trends .section__sub").innerHTML =
-    `Hourly <strong>${metric.label.toLowerCase()}</strong> for <strong>${station.name_en}</strong>. ` +
-    `The shaded band is the national spread (min–max across all stations); the dashed line is the island average.`;
+    `<strong>${station.name}</strong> 的每小時<strong>${metric.label}</strong>。` +
+    `陰影區為全國範圍（各站最小–最大），虛線為全島平均。`;
 
   const times = series.time.map(fmtTimeLabel);
   const n = times.length;
@@ -93,9 +93,9 @@ function render() {
         const i = ps[0].dataIndex;
         const v = (x) => (x == null ? "—" : x);
         return `<b>${times[i]}</b><br/>` +
-          `<span style="color:${lineColor}">●</span> ${station.name_en}: <b>${v(stationVals[i])} ${metric.unit}</b><br/>` +
-          `Island avg: ${v(env.avg[i])} ${metric.unit}<br/>` +
-          `National range: ${v(env.min[i])} – ${v(env.max[i])} ${metric.unit}`;
+          `<span style="color:${lineColor}">●</span> ${station.name}：<b>${v(stationVals[i])} ${metric.unit}</b><br/>` +
+          `全島平均：${v(env.avg[i])} ${metric.unit}<br/>` +
+          `全國範圍：${v(env.min[i])} – ${v(env.max[i])} ${metric.unit}`;
       },
     },
     xAxis: {
@@ -115,9 +115,9 @@ function render() {
         lineStyle: { opacity: 0 }, silent: true },
       { name: "_range", type: "line", data: range, stack: "band", symbol: "none",
         lineStyle: { opacity: 0 }, areaStyle: { color: "rgba(120,130,150,.12)" }, silent: true },
-      { name: "Island average", type: "line", data: env.avg, symbol: "none", smooth: true,
+      { name: "全島平均", type: "line", data: env.avg, symbol: "none", smooth: true,
         lineStyle: { color: "#8a877f", width: 1.4, type: "dashed" }, z: 3 },
-      { name: station.name_en, type: "line", data: stationVals, smooth: true, symbol: "circle",
+      { name: station.name, type: "line", data: stationVals, smooth: true, symbol: "circle",
         symbolSize: 5, showSymbol: false,
         lineStyle: { color: lineColor, width: 3 }, itemStyle: { color: lineColor },
         areaStyle: isTemp ? { color: hexFade(lineColor) } : undefined, z: 5,

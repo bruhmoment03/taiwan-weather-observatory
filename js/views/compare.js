@@ -7,8 +7,8 @@ import { setStation, subscribe } from "../state.js";
 let rankChart, scatterChart, scatterX = "elevation_m";
 
 const SCATTER_AXES = [
-  { key: "elevation_m", label: "elevation", unit: "m" },
-  { key: "humidity", label: "humidity", unit: "%" },
+  { key: "elevation_m", label: "海拔", unit: "m" },
+  { key: "humidity", label: "濕度", unit: "%" },
 ];
 
 export function initCompare() {
@@ -31,7 +31,7 @@ function buildScatterToggle() {
   for (const a of SCATTER_AXES) {
     const b = document.createElement("button");
     b.className = "chip";
-    b.textContent = a.label[0].toUpperCase() + a.label.slice(1);
+    b.textContent = a.label;
     b.dataset.axis = a.key;
     b.setAttribute("aria-pressed", String(a.key === scatterX));
     b.addEventListener("click", () => {
@@ -47,7 +47,7 @@ function buildScatterToggle() {
 
 function renderRank() {
   const rows = data.latest.filter((s) => s.temp != null).sort((a, b) => a.temp - b.temp);
-  const names = rows.map((s) => s.name_en);
+  const names = rows.map((s) => s.name);
   const values = rows.map((s) => ({
     value: s.temp, id: s.id,
     itemStyle: { color: tempColor(s.temp), borderRadius: [0, 4, 4, 0] },
@@ -61,7 +61,7 @@ function renderRank() {
       textStyle: { color: "#1a1916", fontSize: 12 },
       formatter: (ps) => {
         const s = data.byId[ps[0].data.id];
-        return `<b>${s.name_en}</b> · ${s.county}<br/>${fmt(s.temp)} °C · ${fmt(s.elevation_m, 0)} m`;
+        return `<b>${s.name}</b> · ${s.county}<br/>${fmt(s.temp)} °C · 海拔 ${fmt(s.elevation_m, 0)} m`;
       },
     },
     xAxis: {
@@ -98,11 +98,11 @@ function renderScatter() {
       textStyle: { color: "#1a1916", fontSize: 12 },
       formatter: (p) => {
         const s = data.byId[p.data.id];
-        return `<b>${s.name_en}</b><br/>${fmt(s.temp)} °C · ${axis.label} ${fmt(s[scatterX], scatterX === "humidity" ? 0 : 0)} ${axis.unit}`;
+        return `<b>${s.name}</b><br/>${fmt(s.temp)} °C · ${axis.label} ${fmt(s[scatterX], 0)} ${axis.unit}`;
       },
     },
     xAxis: {
-      type: "value", name: `${axis.label} (${axis.unit})`, nameLocation: "middle", nameGap: 28,
+      type: "value", name: `${axis.label}（${axis.unit}）`, nameLocation: "middle", nameGap: 28,
       nameTextStyle: { color: "#8a877f", fontSize: 12 },
       axisLabel: { color: "#8a877f", fontSize: 11 },
       splitLine: { lineStyle: { color: "#f0ece3" } },
@@ -116,7 +116,7 @@ function renderScatter() {
       type: "scatter", data: pts, symbolSize: 13,
       emphasis: { scale: 1.4, itemStyle: { borderColor: "#1a1916", borderWidth: 1.5 } },
       label: {
-        show: true, position: "right", formatter: (p) => data.byId[p.data.id].name_en,
+        show: true, position: "right", formatter: (p) => data.byId[p.data.id].name,
         color: "#8a877f", fontSize: 9.5,
       },
     }],
