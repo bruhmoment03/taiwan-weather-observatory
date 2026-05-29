@@ -2,6 +2,7 @@
   "name": "taiwan-weather-proxy",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Cloudflare Worker that proxies and shapes CWA weather data for the Taiwan Weather Observatory dashboard.",
   "scripts": {
     "dev": "wrangler dev",

@@ -1,6 +1,7 @@
 name = "taiwan-weather-proxy"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
+preview_urls = false
 
 # CWA_API_KEY is set as a secret (not here):
 #   npx wrangler secret put CWA_API_KEY

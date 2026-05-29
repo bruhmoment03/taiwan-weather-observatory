@@ -4,6 +4,7 @@
 // The CWA key lives only in the CWA_API_KEY secret — never in the browser.
 
 import coordsRaw from "../../data/station_coords.json";
+import { buildCsvStations, buildCsvObservations } from "./csv.js";
 
 const coords = Object.fromEntries(
   Object.entries(coordsRaw).filter(([k]) => !k.startsWith("_"))
@@ -148,6 +149,18 @@ function jsonResponse(obj, status = 200, extra = {}) {
   });
 }
 
+function csvResponse(text, extra = {}) {
+  return new Response(text, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": `public, max-age=${CACHE_SECONDS}`,
+      ...extra,
+    },
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
@@ -155,30 +168,34 @@ export default {
     const key = env.CWA_API_KEY;
     if (!key) return jsonResponse({ error: "CWA_API_KEY secret is not configured." }, 500);
 
-    // Edge cache keyed by a stable URL so all visitors share one cached payload.
+    const { pathname } = new URL(request.url);
+
+    // Shared cached payload (built once per CACHE_SECONDS) reused across all routes.
     const cache = caches.default;
     const cacheKey = new Request(new URL(request.url).origin + "/__cwa_payload", { method: "GET" });
-    const cached = await cache.match(cacheKey);
-    if (cached) return cached;
-
-    const url = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/${DATASET}?Authorization=${key}&format=JSON`;
-    let raw;
-    try {
-      const res = await fetch(url, { cf: { cacheTtl: CACHE_SECONDS, cacheEverything: true } });
-      if (!res.ok) return jsonResponse({ error: `CWA API returned HTTP ${res.status}` }, 502);
-      raw = await res.json();
-    } catch (e) {
-      return jsonResponse({ error: `Upstream fetch failed: ${e.message}` }, 502);
+    let payload;
+    const cachedPayload = await cache.match(cacheKey);
+    if (cachedPayload) {
+      payload = await cachedPayload.json();
+    } else {
+      const url = `https://opendata.cwa.gov.tw/api/v1/rest/datastore/${DATASET}?Authorization=${key}&format=JSON`;
+      let raw;
+      try {
+        const res = await fetch(url, { cf: { cacheTtl: CACHE_SECONDS, cacheEverything: true } });
+        if (!res.ok) return jsonResponse({ error: `CWA API returned HTTP ${res.status}` }, 502);
+        raw = await res.json();
+      } catch (e) {
+        return jsonResponse({ error: `Upstream fetch failed: ${e.message}` }, 502);
+      }
+      if (String(raw.success).toLowerCase() !== "true") {
+        return jsonResponse({ error: "CWA API reported success=false" }, 502);
+      }
+      payload = build(raw);
+      ctx.waitUntil(cache.put(cacheKey, jsonResponse(payload).clone()));
     }
-    if (String(raw.success).toLowerCase() !== "true") {
-      return jsonResponse({ error: "CWA API reported success=false" }, 502);
-    }
 
-    const payload = build(raw);
-    const response = jsonResponse(payload, 200, {
-      "Cache-Control": `public, max-age=${CACHE_SECONDS}`,
-    });
-    ctx.waitUntil(cache.put(cacheKey, response.clone()));
-    return response;
+    if (pathname === "/stations.csv") return csvResponse(buildCsvStations(payload));
+    if (pathname === "/observations.csv") return csvResponse(buildCsvObservations(payload));
+    return jsonResponse(payload, 200, { "Cache-Control": `public, max-age=${CACHE_SECONDS}` });
   },
 };
