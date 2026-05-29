@@ -1,0 +1,45 @@
+name: Update weather data
+
+on:
+  schedule:
+    - cron: "5 * * * *"      # hourly, 5 min past the hour (UTC)
+  workflow_dispatch: {}        # allow manual runs
+  push:
+    branches: [main]
+    paths:
+      - "scripts/fetch_data.py"
+      - "data/station_coords.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch and shape CWA data
+        env:
+          CWA_API_KEY: ${{ secrets.CWA_API_KEY }}
+        run: python scripts/fetch_data.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "weather-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain data/)" ]]; then
+            git add data/meta.json data/latest.json data/timeseries.json
+            git commit -m "data: refresh CWA observations [skip ci]"
+            git push
+          else
+            echo "No data changes."
+          fi

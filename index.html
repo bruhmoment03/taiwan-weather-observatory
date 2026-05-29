@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taiwan Weather Observatory</title>
+  <meta name="description" content="A live editorial dashboard of temperature and weather across Taiwan's 31 official weather stations, from the Central Weather Administration." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar" id="top">
+    <a class="brand" href="#top">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__name">Taiwan&nbsp;Weather&nbsp;Observatory</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#overview">Overview</a>
+      <a href="#map">Map</a>
+      <a href="#trends">Trends</a>
+      <a href="#compare">Compare</a>
+    </nav>
+    <div class="updated" id="updated" title="Latest data timestamp">
+      <span class="updated__dot" aria-hidden="true"></span>
+      <span id="updated-text">Loading…</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- OVERVIEW / HERO -->
+    <section id="overview" class="section section--hero">
+      <div class="hero__head">
+        <p class="eyebrow">Live conditions · <span id="window-label">—</span></p>
+        <h1 class="hero__title">Taiwan, <span class="hero__title-accent">right now</span></h1>
+        <p class="hero__lede" id="hero-lede">
+          Temperature and weather across the island's official observation network.
+        </p>
+      </div>
+
+      <!-- National summary stats -->
+      <div class="natstrip" id="natstrip">
+        <div class="natstat" data-kind="cold">
+          <span class="natstat__label">Coldest station</span>
+          <span class="natstat__value" id="nat-cold-val">—</span>
+          <span class="natstat__sub" id="nat-cold-name">—</span>
+        </div>
+        <div class="natstat" data-kind="mean">
+          <span class="natstat__label">Island average</span>
+          <span class="natstat__value" id="nat-mean-val">—</span>
+          <span class="natstat__sub" id="nat-count">— stations reporting</span>
+        </div>
+        <div class="natstat" data-kind="hot">
+          <span class="natstat__label">Hottest station</span>
+          <span class="natstat__value" id="nat-hot-val">—</span>
+          <span class="natstat__sub" id="nat-hot-name">—</span>
+        </div>
+      </div>
+
+      <!-- Featured station -->
+      <div class="feature">
+        <div class="feature__bar">
+          <label class="feature__pick">
+            <span>Featured station</span>
+            <select id="station-select" aria-label="Choose a station"></select>
+          </label>
+          <p class="feature__meta" id="feature-meta">—</p>
+        </div>
+
+        <div class="feature__body">
+          <div class="bigtemp">
+            <span class="bigtemp__value" id="big-temp">—</span>
+            <span class="bigtemp__unit">°C</span>
+            <div class="bigtemp__range" id="big-range">24-hour range —</div>
+          </div>
+
+          <div class="metricgrid" id="metricgrid">
+            <!-- metric cards injected by JS -->
+          </div>
+        </div>
+
+        <div class="legend" aria-hidden="true">
+          <span class="legend__label">Cooler</span>
+          <span class="legend__bar" id="legend-bar"></span>
+          <span class="legend__label">Warmer</span>
+          <div class="legend__ticks" id="legend-ticks"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section id="map" class="section">
+      <div class="section__head">
+        <h2 class="section__title">The island at a glance</h2>
+        <p class="section__sub">Every station, coloured by its current temperature. Click a marker to feature it.</p>
+      </div>
+      <div class="mapwrap">
+        <div id="leaflet" class="leaflet"></div>
+        <div class="mapfilters" id="region-filters" role="group" aria-label="Filter by region"></div>
+      </div>
+    </section>
+
+    <!-- TRENDS -->
+    <section id="trends" class="section">
+      <div class="section__head">
+        <h2 class="section__title">The last 24 hours</h2>
+        <p class="section__sub">Hourly readings for <strong id="trend-station-name">the featured station</strong>. The shaded band shows the day's temperature range.</p>
+      </div>
+      <div class="metric-toggle" id="metric-toggle" role="group" aria-label="Choose a metric"></div>
+      <div id="trend-chart" class="chart chart--tall"></div>
+    </section>
+
+    <!-- COMPARE -->
+    <section id="compare" class="section">
+      <div class="section__head">
+        <h2 class="section__title">Compare &amp; rank</h2>
+        <p class="section__sub">How the 31 stations stack up — and why altitude is the island's great thermostat.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="panel">
+          <h3 class="panel__title">Now, hottest to coldest</h3>
+          <div id="rank-chart" class="chart chart--rank"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__head">
+            <h3 class="panel__title">Temperature vs. <span id="scatter-x-label">elevation</span></h3>
+            <div class="scatter-toggle" id="scatter-toggle" role="group" aria-label="Scatter X axis"></div>
+          </div>
+          <div id="scatter-chart" class="chart"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      Data: <a href="https://opendata.cwa.gov.tw/" target="_blank" rel="noopener">Central Weather Administration (CWA), Taiwan</a>,
+      dataset <code>C-B0024-001</code>. Updated automatically.
+    </p>
+    <p class="footer__fine">An independent visualisation. Temperatures in °C. Not an official CWA product.</p>
+  </footer>
+
+  <div id="error-banner" class="error-banner" hidden></div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
