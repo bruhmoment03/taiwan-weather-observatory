@@ -15,3 +15,8 @@ Thumbs.db
 # Local scratch
 _*.json
 _*.txt
+
+# Worker build output & deps
+worker/dist/
+node_modules/
+.wrangler/
