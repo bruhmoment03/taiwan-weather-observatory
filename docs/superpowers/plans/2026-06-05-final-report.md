@@ -756,7 +756,7 @@ Expected: 新作品集首頁（非舊 Observatory）。
 - [ ] **Step 3:** 發佈至 Web 探測：開啟任一既有報表（上次的「台灣天氣即時儀表板」若仍在），選 檔案 → 內嵌報表 → 發佈至網站(公開)。
   - 出現嵌入碼對話框 → **記錄 VERDICT=可用**。
   - 出現「請連絡您的系統管理員以啟用內嵌程式碼建立」→ **記錄 VERDICT=封鎖**，後續一律截圖備援。
-- [ ] **Step 4:** 把 VERDICT 寫進本檔案此處：`VERDICT: ＿＿＿`（執行時回填），並回報使用者。
+- [x] **Step 4:** `VERDICT: 封鎖`（2026-06-05 實測，「Contact your admin to enable embed code creation」與上次相同）→ 全部報表採截圖＋reportLink 備援，`embedUrl` 留空。
 
 ### Task 7: 建置報表 1–4（INTERACTIVE）
 
