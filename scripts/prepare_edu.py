@@ -29,7 +29,7 @@ def read_tsv(name: str) -> pd.DataFrame:
     return pd.read_csv(SRC / f"{name}.csv", sep="\t", low_memory=False)
 
 
-def parse_iso_duration(s):
+def parse_iso_duration(s) -> float | None:
     """ISO8601 時長（'PT2H1M35S'/'PT0M21S'/'PT5S'）→ 秒；無法解析 → None。"""
     if not isinstance(s, str):
         return None
@@ -49,8 +49,10 @@ def parse_binary_res(s):
 
 
 def time_cols(ts: pd.Series) -> pd.DataFrame:
-    """datetime-like Series → DataFrame(時間, 年, 月, 週次, 星期, 時段)。"""
+    """datetime-like Series → DataFrame(時間, 年, 月, 週次, 星期, 時段)。naive 輸入視為台北牆鐘時間；tz-aware 輸入轉台北後去時區。週次採 ISO 週（跨年週以 ISO 年標記，可能與「年」欄不同）。"""
     ts = pd.to_datetime(ts, errors="coerce")
+    if isinstance(ts.dtype, pd.DatetimeTZDtype):
+        ts = ts.dt.tz_convert("Asia/Taipei").dt.tz_localize(None)
     iso = ts.dt.isocalendar()
     week = iso.year.astype("Int64").astype(str) + "-W" + iso.week.astype("Int64").astype(str).str.zfill(2)
     week = week.where(ts.notna())
@@ -59,8 +61,8 @@ def time_cols(ts: pd.Series) -> pd.DataFrame:
     )
     return pd.DataFrame({
         "時間": ts,
-        "年": ts.dt.year,
-        "月": ts.dt.month,
+        "年": ts.dt.year.astype("Int64"),
+        "月": ts.dt.month.astype("Int64"),
         "週次": week,
         "星期": ts.dt.weekday.map(lambda d: WEEKDAY[int(d)] if pd.notna(d) else None),
         "時段": slot,
@@ -74,4 +76,5 @@ def to_naive_taipei(s: pd.Series) -> pd.Series:
 
 def ms_to_taipei(s: pd.Series) -> pd.Series:
     """Unix 毫秒（UTC）→ 台北時間 naive datetime。"""
-    return pd.to_datetime(s, unit="ms", errors="coerce", utc=True).dt.tz_convert("Asia/Taipei").dt.tz_localize(None)
+    ms = pd.to_numeric(s, errors="coerce")
+    return pd.to_datetime(ms, unit="ms", errors="coerce", utc=True).dt.tz_convert("Asia/Taipei").dt.tz_localize(None)

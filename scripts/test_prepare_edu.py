@@ -36,6 +36,39 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(t.loc[0, "週次"], "2024-W36")
         self.assertTrue(pd.isna(t.loc[2, "年"]))
 
+    def test_to_naive_taipei(self):
+        from prepare_edu import to_naive_taipei
+        s = pd.Series(["2024-09-05T15:34:49.000+08:00", None])
+        out = to_naive_taipei(s)
+        self.assertEqual(out.iloc[0], pd.Timestamp("2024-09-05 15:34:49"))
+        self.assertTrue(out.dt.tz is None)
+        self.assertTrue(pd.isna(out.iloc[1]))
+
+    def test_ms_to_taipei(self):
+        from prepare_edu import ms_to_taipei
+        s = pd.Series([1731849144077, "1731849144077", None])
+        out = ms_to_taipei(s)
+        self.assertEqual(out.iloc[0], pd.Timestamp("2024-11-17 21:12:24.077"))
+        self.assertEqual(out.iloc[1], pd.Timestamp("2024-11-17 21:12:24.077"))
+        self.assertTrue(pd.isna(out.iloc[2]))
+
+    def test_time_cols_int_dtypes_and_tz(self):
+        s = pd.Series(["2024-09-02 13:49:10"])
+        t = time_cols(s)
+        self.assertEqual(str(t["年"].dtype), "Int64")
+        self.assertEqual(str(t["月"].dtype), "Int64")
+        # tz-aware 輸入：轉台北、去時區、牆鐘時間不變
+        s2 = pd.Series(pd.to_datetime(["2024-09-05T15:34:49.000+08:00"], utc=True))
+        t2 = time_cols(s2)
+        self.assertEqual(t2.loc[0, "時間"], pd.Timestamp("2024-09-05 15:34:49"))
+        self.assertEqual(t2.loc[0, "時段"], "下午")
+
+    def test_week_iso_year_boundary(self):
+        # 2024-12-30 屬 ISO 2025-W01；年欄仍為 2024（已知且接受的差異）
+        t = time_cols(pd.Series(["2024-12-30 10:00:00"]))
+        self.assertEqual(t.loc[0, "週次"], "2025-W01")
+        self.assertEqual(t.loc[0, "年"], 2024)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
