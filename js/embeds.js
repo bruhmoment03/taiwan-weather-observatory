@@ -12,20 +12,22 @@ export const EMBEDS = {
 
 export const VIDEO_ID = ""; // YouTube 影片 ID，錄好後填入
 
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+
 export function embedHtml(cfg) {
   if (cfg.embedUrl) {
-    return `<iframe title="${cfg.title}" src="${cfg.embedUrl}" allowfullscreen="true"></iframe>`;
+    return `<iframe title="${esc(cfg.title)}" src="${esc(cfg.embedUrl)}" allowfullscreen="true"></iframe>`;
   }
   const link = cfg.reportLink
-    ? `<p class="embed-note"><a href="${cfg.reportLink}" target="_blank" rel="noopener">在 Power BI 開啟互動報表 ↗</a></p>`
+    ? `<p class="embed-note"><a href="${esc(cfg.reportLink)}" target="_blank" rel="noopener">在 Power BI 開啟互動報表 ↗</a></p>`
     : "";
-  return `<img src="${cfg.screenshot}" alt="${cfg.title} 截圖">${link}` +
+  return `<img src="${cfg.screenshot}" alt="${esc(cfg.title)} 截圖">${link}` +
     `<p class="embed-note">目前顯示報表截圖（互動嵌入待「發佈至 Web」權限開放）。</p>`;
 }
 
 export function videoHtml(id) {
   if (!id) return `<p class="embed-note">解說影片連結待補。</p>`;
-  return `<iframe src="https://www.youtube.com/embed/${id}" title="解說影片" allowfullscreen></iframe>`;
+  return `<iframe src="https://www.youtube.com/embed/${esc(id)}" title="解說影片" allowfullscreen></iframe>`;
 }
 
 // 瀏覽器端掛載（node 測試環境無 document，安全跳過）
