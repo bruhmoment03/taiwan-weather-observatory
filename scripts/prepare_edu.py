@@ -86,6 +86,7 @@ PLATFORM_EVENTS = [
     ("dp001_review", "dp001 影音學習", "影片瀏覽", "start_time", None),
     ("dp002_exam", "dp002 測驗平臺", "測驗作答", "action_time", "iso"),
     ("dp003_word", "dp003 遊戲學習", "單字遊戲", "start_timestamp", None),
+    # dp003_math 無動作時間欄；以 last_modified（伺服器寫入時間, Unix ms）作代理時間戳
     ("dp003_math", "dp003 遊戲學習", "數學遊戲", "last_modified", "ms"),
     ("dp004_interaction", "dp004 綜合學習", "回答問題", "timestamp", "iso"),
     ("dp004_video", "dp004 綜合學習", "觀看影片", "timestamp", "iso"),
@@ -127,6 +128,7 @@ def build_users(users: pd.DataFrame) -> pd.DataFrame:
     )
     # review_plus 沒有 user_sn → 經 review_sn 接回使用者
     plus_u = plus.merge(review[["review_sn", "user_sn"]], on="review_sn", how="inner")
+    # 使用者層只彙總 4 種閱聽行為；build_video 另有含 play/chkptstart 的版本（刻意分開）
     ACTION_LABEL = {"dragleft": "倒轉次數", "dragright": "快轉次數", "paused": "暫停次數", "note": "筆記次數"}
     plus_g = (
         plus_u[plus_u["view_action"].isin(ACTION_LABEL)]
@@ -161,6 +163,8 @@ def build_users(users: pd.DataFrame) -> pd.DataFrame:
         out[c] = out[c].fillna(0).astype(int)
     out["練習平均正確率"] = out["練習平均正確率"].round(1)
     out["影片平均完成率"] = out["影片平均完成率"].round(1)
+    for c in ["國語成績", "數學成績", "英語成績"]:
+        out[c] = out[c].astype("Int64")
     out["總活動量"] = (out["練習次數"] + out["影片瀏覽次數"] + out["單字遊戲次數"]
                       + out["數學遊戲次數"] + out["測驗作答次數"] + out["綜合平臺活動數"])
     out["參與度分組"] = pd.qcut(out["總活動量"].rank(method="first"), 4,
@@ -240,13 +244,16 @@ def main():
     # --- 驗證 ---
     expected_rows = 6624 + 4567 + 41864 + 2140 + 1365 + 15392 + 6086 + 23642
     assert len(activity) == expected_rows, f"activity rows {len(activity)} != {expected_rows}"
-    assert len(users_out) == 313 and users_out["使用者編號"].is_unique
-    assert users_out[["國語成績", "數學成績", "英語成績"]].isna().sum().tolist() == [120, 45, 112]
+    assert len(users_out) == 313 and users_out["使用者編號"].is_unique, \
+        f"users rows={len(users_out)}, unique={users_out['使用者編號'].is_unique}"
+    assert users_out[["國語成績", "數學成績", "英語成績"]].isna().sum().tolist() == [120, 45, 112], \
+        f"missing={users_out[['國語成績','數學成績','英語成績']].isna().sum().tolist()}"
     assert (users_out["總活動量"] >= 0).all() and (users_out["練習總秒數"] >= 0).all()
     assert users_out["參與度分組"].value_counts().min() >= 78  # 四分位每組約 78
-    assert len(video) == 4567 and (video["完成率"].dropna() >= 0).all()
-    assert (difficulty["正確率"].between(0, 100)).all()
-    assert set(activity["平臺"].unique()) == {"dp001 影音學習", "dp002 測驗平臺", "dp003 遊戲學習", "dp004 綜合學習"}
+    assert len(video) == 4567 and (video["完成率"].dropna() >= 0).all(), f"video rows={len(video)}"
+    assert (difficulty["正確率"].between(0, 100)).all(), "正確率 out of [0,100]"
+    assert set(activity["平臺"].unique()) == {"dp001 影音學習", "dp002 測驗平臺", "dp003 遊戲學習", "dp004 綜合學習"}, \
+        f"platforms={sorted(activity['平臺'].unique())}"
 
     for name, df in [("edu_activity", activity), ("edu_users", users_out),
                      ("edu_video", video), ("edu_difficulty", difficulty)]:
