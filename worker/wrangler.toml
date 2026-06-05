@@ -1,6 +1,7 @@
 name = "taiwan-weather-proxy"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
+account_id = "6dd576f7b5a1dc36129dcbbeca6a6b35"
 preview_urls = false
 
 # CWA_API_KEY is set as a secret (not here):

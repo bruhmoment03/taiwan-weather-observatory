@@ -11,6 +11,6 @@
     "secret": "wrangler secret put CWA_API_KEY"
   },
   "devDependencies": {
-    "wrangler": "^3.90.0"
+    "wrangler": "^4.98.0"
   }
 }
