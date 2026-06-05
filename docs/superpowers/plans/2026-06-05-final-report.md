@@ -448,7 +448,7 @@ WEEKDAY = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"]
 
 USER_RENAME = {
     "user_sn": "使用者編號", "organization_id": "學校代碼", "grade": "年級",
-    "class": "班級", "chinese_score": "國語成績", "math_score": "數學成績",
+    "class": "班級", "chinese_score": "國文成績", "math_score": "數學成績",
     "english_score": "英語成績",
 }
 
@@ -688,7 +688,7 @@ def main():
     expected_rows = 6624 + 4567 + 41864 + 2140 + 1365 + 15392 + 6086 + 23642
     assert len(activity) == expected_rows, f"activity rows {len(activity)} != {expected_rows}"
     assert len(users_out) == 313 and users_out["使用者編號"].is_unique
-    assert users_out[["國語成績", "數學成績", "英語成績"]].isna().sum().tolist() == [120, 45, 112]
+    assert users_out[["國文成績", "數學成績", "英語成績"]].isna().sum().tolist() == [120, 45, 112]
     assert (users_out["總活動量"] >= 0).all() and (users_out["練習總秒數"] >= 0).all()
     assert users_out["參與度分組"].value_counts().min() >= 78  # 四分位每組約 78
     assert len(video) == 4567 and (video["完成率"].dropna() >= 0).all()
@@ -785,7 +785,7 @@ Expected: 新作品集首頁（非舊 Observatory）。
 - [ ] **Step 3: 報表2 視覺清單**（單頁，主打）
   - 散佈：X=練習平均正確率、Y=數學成績、詳細資料=使用者編號、圖例=年級、＋趨勢線 →「練習正確率 × 數學成績」
   - 散佈：X=影片平均完成率、Y=英語成績、詳細資料=使用者編號、圖例=年級、＋趨勢線
-  - 群組直條：X=參與度分組、Y=國語/數學/英語成績 的平均（三序列）→「參與度 × 平均成績」
+  - 群組直條：X=參與度分組、Y=國文/數學/英語成績 的平均（三序列）→「參與度 × 平均成績」
   - 卡片×3：練習次數 平均、影片平均完成率 平均、總活動量 平均
   - 交叉分析篩選器×2：學校代碼、年級
 - [ ] **Step 4: 報表2 發佈/截圖**
@@ -850,11 +850,11 @@ def main():
 
     w("\n== 主題2 行為×成績（皮爾森相關，成績缺漏列排除）==")
     for b in ["練習次數", "練習平均正確率", "影片瀏覽次數", "影片平均完成率", "總活動量"]:
-        for s in ["國語成績", "數學成績", "英語成績"]:
+        for s in ["國文成績", "數學成績", "英語成績"]:
             sub = users[[b, s]].dropna()
             w(f"corr({b},{s}) = {sub[b].corr(sub[s]):.3f}  (n={len(sub)})")
     w("參與度分組平均成績:")
-    w(users.groupby("參與度分組", observed=True)[["國語成績", "數學成績", "英語成績"]].mean().round(1).to_string())
+    w(users.groupby("參與度分組", observed=True)[["國文成績", "數學成績", "英語成績"]].mean().round(1).to_string())
 
     w("\n== 主題3 影片行為 ==")
     w(f"完成率平均 {video['完成率'].mean():.1f}%、>=90% 比率 {(video['完成率']>=90).mean()*100:.1f}%")
@@ -973,7 +973,7 @@ FILES_TABLE = [  # 檔名, 筆數, 欄數, 內容
 
 RENAME_TABLE = [
     ("user_sn", "使用者編號"), ("organization_id", "學校代碼"), ("grade", "年級"),
-    ("class", "班級"), ("chinese_score", "國語成績"), ("math_score", "數學成績"),
+    ("class", "班級"), ("chinese_score", "國文成績"), ("math_score", "數學成績"),
     ("english_score", "英語成績"), ("subject_name", "科目"), ("video_name", "影片名稱"),
     ("finish_rate", "完成率"), ("indicator_name", "能力指標"), ("score_rate", "練習正確率"),
 ]
@@ -981,7 +981,7 @@ RENAME_TABLE = [
 PREP_STEPS = [
     "Tab 分隔原始檔轉為標準 CSV，統一輸出 UTF-8（含 BOM）以利 Power BI 讀取中文。",
     "欄位重新命名：所有英文欄名改為中文（對照表如表 2），提升報表可讀性。",
-    "缺失值處理：國語、數學、英語成績各有 120、45、112 筆缺漏；行為彙總保留全部 313 位使用者，"
+    "缺失值處理：國文、數學、英語成績各有 120、45、112 筆缺漏；行為彙總保留全部 313 位使用者，"
     "與成績相關之分析則逐科排除缺漏列並於圖表註記樣本數。",
     "時間標準化：dp002/dp004 之 ISO8601 含時區時間戳與 dp003 之 Unix 毫秒時間戳，統一轉為台北時間，"
     "並衍生年、月、週次、星期、時段欄位以利時間序列分析。",

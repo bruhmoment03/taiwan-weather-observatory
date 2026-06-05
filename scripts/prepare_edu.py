@@ -20,7 +20,7 @@ WEEKDAY = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"]
 
 USER_RENAME = {
     "user_sn": "使用者編號", "organization_id": "學校代碼", "grade": "年級",
-    "class": "班級", "chinese_score": "國語成績", "math_score": "數學成績",
+    "class": "班級", "chinese_score": "國文成績", "math_score": "數學成績",
     "english_score": "英語成績",
 }
 
@@ -163,7 +163,7 @@ def build_users(users: pd.DataFrame) -> pd.DataFrame:
         out[c] = out[c].fillna(0).astype(int)
     out["練習平均正確率"] = out["練習平均正確率"].round(1)
     out["影片平均完成率"] = out["影片平均完成率"].round(1)
-    for c in ["國語成績", "數學成績", "英語成績"]:
+    for c in ["國文成績", "數學成績", "英語成績"]:
         out[c] = out[c].astype("Int64")
     out["總活動量"] = (out["練習次數"] + out["影片瀏覽次數"] + out["單字遊戲次數"]
                       + out["數學遊戲次數"] + out["測驗作答次數"] + out["綜合平臺活動數"])
@@ -246,8 +246,8 @@ def main():
     assert len(activity) == expected_rows, f"activity rows {len(activity)} != {expected_rows}"
     assert len(users_out) == 313 and users_out["使用者編號"].is_unique, \
         f"users rows={len(users_out)}, unique={users_out['使用者編號'].is_unique}"
-    assert users_out[["國語成績", "數學成績", "英語成績"]].isna().sum().tolist() == [120, 45, 112], \
-        f"missing={users_out[['國語成績','數學成績','英語成績']].isna().sum().tolist()}"
+    assert users_out[["國文成績", "數學成績", "英語成績"]].isna().sum().tolist() == [120, 45, 112], \
+        f"missing={users_out[['國文成績','數學成績','英語成績']].isna().sum().tolist()}"
     assert (users_out["總活動量"] >= 0).all() and (users_out["練習總秒數"] >= 0).all()
     assert users_out["參與度分組"].value_counts().min() >= 78  # 四分位每組約 78
     assert len(video) == 4567 and (video["完成率"].dropna() >= 0).all(), f"video rows={len(video)}"
