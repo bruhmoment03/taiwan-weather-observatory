@@ -15,8 +15,15 @@
   <a class="backlink" href="index.html">← 回作品集</a>
   <div data-embed="ex2"></div>
   <details class="howto">
-    <summary>製作說明</summary>
-    <p>本練習建置中，說明將於完成時補上。</p>
+    <summary>製作說明（含 DAX）</summary>
+    <p>矩陣：列=測站、行=item_display、值=濃度平均；臭氧欄位以 DAX 量值配條件格式化圖示
+（&lt;30 綠、&lt;40 黃、其餘紅）。</p>
+    <pre>臭氧等級 =
+VAR CurrentItem = SELECTEDVALUE(aqx_p_08[itemname])
+VAR O3 = AVERAGE(aqx_p_08[concentration])
+RETURN IF(CurrentItem = "臭氧",
+  SWITCH(TRUE(), O3 &lt; 30, 1, O3 &lt; 40, 2, 3), BLANK())</pre>
+    <p>欄位顯示名稱由計算資料行 item_display（SWITCH 對照 15 種測項之英文縮寫）產生。</p>
   </details>
   <div class="footer">資料來源：環境部環境資訊科技司 [202603] [空氣品質監測月值]</div>
 </div>
