@@ -34,6 +34,9 @@ def build_flat(orders: pd.DataFrame, cust: pd.DataFrame) -> pd.DataFrame:
     stubs = cust[~cust["顧客編號"].isin(orders["顧客編號"])].copy()
     out = pd.concat([flat, stubs], ignore_index=True)
     out["年齡層"] = out["年齡"].map(age_band)
+    # stub 列使日期衍生欄出現 NaN → 轉 nullable Int64，避免 CSV 出現 1.0 式浮點殘影
+    for c in ["年", "月", "日", "季", "年齡", "年齡層", "單價", "數量"]:
+        out[c] = out[c].astype("Int64")
     return out
 
 
