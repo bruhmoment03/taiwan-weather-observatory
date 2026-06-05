@@ -20,3 +20,11 @@ _*.txt
 worker/dist/
 node_modules/
 .wrangler/
+
+# course materials (licensed for teaching use; never commit)
+彰師bi/
+台灣天氣資料.xlsx
+~$*
+
+# generated final report (contains personal info)
+report/
