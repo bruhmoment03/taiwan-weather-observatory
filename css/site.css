@@ -1,0 +1,23 @@
+:root { --header:#1f2937; --bg:#f4f6f9; --card:#fff; --text:#1f2937; --muted:#666; --accent:#2563eb; }
+* { box-sizing: border-box; }
+body { font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif; margin:0; background:var(--bg); color:var(--text); }
+.header { background:var(--header); color:#fff; padding:28px 20px; text-align:center; }
+.header h1 { margin:0 0 6px; font-size:1.6rem; }
+.header p { margin:0; color:#cbd5e1; font-size:.95rem; }
+.container { max-width:1100px; margin:0 auto; padding:20px; }
+.cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+.card { background:var(--card); border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:18px; display:flex; flex-direction:column; gap:8px; }
+.card h2 { margin:0; font-size:1.1rem; }
+.card p { margin:0; color:var(--muted); font-size:.9rem; flex:1; }
+.card a.btn { display:inline-block; background:var(--accent); color:#fff; padding:8px 14px; border-radius:8px; text-decoration:none; text-align:center; }
+.card.featured { grid-column:1/-1; border:2px solid var(--accent); }
+.embed-slot iframe { width:100%; height:850px; border:none; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.2); background:#fff; }
+.embed-slot img { width:100%; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.2); }
+.embed-note { margin:8px 0 0; color:var(--muted); font-size:.85rem; }
+.video-slot iframe { width:100%; aspect-ratio:16/9; border:none; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.2); }
+details.howto { background:var(--card); border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,.08); padding:14px 18px; margin-top:20px; }
+details.howto summary { cursor:pointer; font-weight:700; }
+details.howto pre { background:#0f172a; color:#e2e8f0; padding:12px; border-radius:8px; overflow:auto; font-size:.85rem; }
+.footer { margin:24px 0; color:var(--muted); font-size:14px; text-align:center; }
+.backlink { display:inline-block; margin-bottom:12px; color:var(--accent); text-decoration:none; }
+h2.sec { margin-top:28px; }

@@ -1,161 +1,41 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>台灣氣象觀測站</title>
-  <meta name="description" content="台灣 31 個官方氣象測站的即時氣溫與天氣儀表板，資料來自中央氣象署開放資料平台。" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-
-  <link rel="stylesheet" href="./css/styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商業智慧 Power BI 作品集</title>
+  <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
-  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-
-  <!-- Top bar -->
-  <header class="topbar" id="top">
-    <a class="brand" href="#top">
-      <span class="brand__mark" aria-hidden="true"></span>
-      <span class="brand__name">台灣氣象觀測站</span>
-    </a>
-    <nav class="nav" aria-label="章節">
-      <a href="#overview">總覽</a>
-      <a href="#map">地圖</a>
-      <a href="#trends">趨勢</a>
-      <a href="#compare">比較</a>
-      <a href="./powerbi.html">Power BI</a>
-    </nav>
-    <div class="updated" id="updated" title="最新資料時間">
-      <span class="updated__dot" aria-hidden="true"></span>
-      <span id="updated-text">載入中…</span>
+<div class="header">
+  <h1>商業智慧 Power BI 作品集</h1>
+  <p>期末報告與教學檔三練習｜Power BI ＋ 開放資料</p>
+</div>
+<div class="container">
+  <div class="cards">
+    <div class="card featured">
+      <h2>期末報告：國小學習平臺行為與學業成績分析</h2>
+      <p>313 位學生 × 4 個學習平臺的一學期行為紀錄。四大主題：使用概況、學習行為×成績、影片學習行為、科目與能力難點。附完整報告與解說影片。</p>
+      <a class="btn" href="report.html">進入期末報告</a>
     </div>
-  </header>
-
-  <main>
-    <!-- OVERVIEW / HERO -->
-    <section id="overview" class="section section--hero" data-reveal>
-      <div class="hero__head">
-        <p class="eyebrow">即時觀測 · <span id="window-label">—</span></p>
-        <h1 class="hero__title">台灣，<span class="hero__title-accent">此刻</span></h1>
-        <p class="hero__lede" id="hero-lede">
-          全島官方氣象測站的氣溫與天氣概況。
-        </p>
-      </div>
-
-      <!-- National summary stats -->
-      <div class="natstrip" id="natstrip">
-        <div class="natstat" data-kind="cold" data-reveal>
-          <span class="natstat__label">最低溫測站</span>
-          <span class="natstat__value" id="nat-cold-val">—</span>
-          <span class="natstat__sub" id="nat-cold-name">—</span>
-        </div>
-        <div class="natstat" data-kind="mean" data-reveal>
-          <span class="natstat__label">全島平均</span>
-          <span class="natstat__value" id="nat-mean-val">—</span>
-          <span class="natstat__sub" id="nat-count">— 個測站回報中</span>
-        </div>
-        <div class="natstat" data-kind="hot" data-reveal>
-          <span class="natstat__label">最高溫測站</span>
-          <span class="natstat__value" id="nat-hot-val">—</span>
-          <span class="natstat__sub" id="nat-hot-name">—</span>
-        </div>
-      </div>
-
-      <!-- Featured station -->
-      <div class="feature" data-reveal>
-        <div class="feature__bar">
-          <label class="feature__pick">
-            <span>精選測站</span>
-            <select id="station-select" aria-label="選擇測站"></select>
-          </label>
-          <p class="feature__meta" id="feature-meta">—</p>
-        </div>
-
-        <div class="feature__body">
-          <div class="bigtemp">
-            <span class="bigtemp__value" id="big-temp">—</span>
-            <span class="bigtemp__unit">°C</span>
-            <div class="bigtemp__range" id="big-range">24 小時範圍 —</div>
-          </div>
-
-          <div class="metricgrid" id="metricgrid">
-            <!-- metric cards injected by JS -->
-          </div>
-        </div>
-
-        <div class="legend" aria-hidden="true">
-          <span class="legend__label">較涼</span>
-          <span class="legend__bar" id="legend-bar"></span>
-          <span class="legend__label">較暖</span>
-          <div class="legend__ticks" id="legend-ticks"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MAP -->
-    <section id="map" class="section" data-reveal>
-      <div class="section__head">
-        <h2 class="section__title">全島一覽</h2>
-        <p class="section__sub">每個測站依目前氣溫上色，點選標記即可設為精選測站。</p>
-      </div>
-      <div class="mapwrap">
-        <div id="leaflet" class="leaflet"></div>
-        <div class="mapfilters" id="region-filters" role="group" aria-label="依區域篩選"></div>
-      </div>
-    </section>
-
-    <!-- TRENDS -->
-    <section id="trends" class="section" data-reveal>
-      <div class="section__head">
-        <h2 class="section__title">過去 24 小時</h2>
-        <p class="section__sub"><strong id="trend-station-name">精選測站</strong>的每小時觀測。陰影區為全國範圍。</p>
-      </div>
-      <div class="metric-toggle" id="metric-toggle" role="group" aria-label="選擇指標"></div>
-      <div id="trend-chart" class="chart chart--tall"></div>
-    </section>
-
-    <!-- COMPARE -->
-    <section id="compare" class="section" data-reveal>
-      <div class="section__head">
-        <h2 class="section__title">比較與排名</h2>
-        <p class="section__sub">31 個測站的高下之分——以及為何海拔是全島最大的溫度調節器。</p>
-      </div>
-
-      <div class="compare-grid">
-        <div class="panel" data-reveal>
-          <h3 class="panel__title">目前氣溫（由高到低）</h3>
-          <div id="rank-chart" class="chart chart--rank"></div>
-        </div>
-        <div class="panel" data-reveal>
-          <div class="panel__head">
-            <h3 class="panel__title">氣溫 vs <span id="scatter-x-label">海拔</span></h3>
-            <div class="scatter-toggle" id="scatter-toggle" role="group" aria-label="散佈圖 X 軸"></div>
-          </div>
-          <div id="scatter-chart" class="chart"></div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer" data-reveal>
-    <p>
-      資料來源：<a href="https://opendata.cwa.gov.tw/" target="_blank" rel="noopener">中央氣象署（CWA）開放資料平台</a>，
-      資料集 <code>C-B0024-001</code>，自動更新。
-    </p>
-    <p class="footer__fine">獨立製作之視覺化作品 · 氣溫單位為 °C · 非中央氣象署官方產品。</p>
-  </footer>
-
-  <div id="error-banner" class="error-banner" hidden></div>
-
-  <script type="module" src="./js/main.js"></script>
+    <div class="card">
+      <h2>練習一：台灣 36 小時天氣預報</h2>
+      <p>CWA 開放資料 API 即時供應的地圖泡泡儀表板，排程自動更新。</p>
+      <a class="btn" href="ex1.html">進入</a>
+    </div>
+    <div class="card">
+      <h2>練習二：台灣空氣品質監測</h2>
+      <p>環境部監測月值：矩陣＋臭氧等級紅黃綠圖示（DAX 條件格式）。</p>
+      <a class="btn" href="ex2.html">進入</a>
+    </div>
+    <div class="card">
+      <h2>練習三：顧客消費資料分析</h2>
+      <p>銷售業績資料：環圈、緞帶、堆疊直條與 Sunburst 客群探索。</p>
+      <a class="btn" href="ex3.html">進入</a>
+    </div>
+  </div>
+  <div class="footer">以 Power BI 製作｜GitHub Pages 託管</div>
+</div>
+<script type="module" src="js/embeds.js"></script>
 </body>
 </html>
