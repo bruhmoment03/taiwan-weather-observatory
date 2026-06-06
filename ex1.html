@@ -16,7 +16,19 @@
   <div data-embed="ex1"></div>
   <details class="howto">
     <summary>製作說明</summary>
-    <p>本練習建置中，說明將於完成時補上。</p>
+    <p>資料流程：CWA 開放資料 API（F-C0032-001）→ Cloudflare Worker 即時樞紐為
+<a href="https://taiwan-weather-proxy.ii96391799.workers.dev/forecast.csv">forecast.csv</a>
+（API 金鑰只存於 Worker secret）→ Power BI 以 CSV 連結匯入，排程每日 8 次自動更新（台北時區）。</p>
+    <p>教學檔原始作法為 Power BI 內以 Power Query 樞紐，公式如下（本作品改於 Worker 端完成、結果相同）：</p>
+    <pre>= Table.Group(Table.Pivot(已移除資料行, List.Distinct(已移除資料行[elementName]),
+  "elementName","parameterName", List.First), {"locationName","startTime"},
+  {{"Wx", each List.First(List.RemoveNulls([Wx])), type text},
+   {"PoP", each List.First(List.RemoveNulls([PoP])), type text},
+   {"MinT", each List.First(List.RemoveNulls([MinT])), type text},
+   {"CI", each List.First(List.RemoveNulls([CI])), type text},
+   {"MaxT", each List.First(List.RemoveNulls([MaxT])), type text}})</pre>
+    <p>視覺設定：地圖（位置=縣市、圖例=降雨機率 PoP、泡泡大小=最高溫 MaxT、工具提示=天氣狀況 Wx）＋
+最高溫/最低溫/平均降雨機率卡片＋時間與縣市篩選器。</p>
   </details>
   <div class="footer">資料來源：中央氣象署（CWA）開放資料平臺</div>
 </div>
