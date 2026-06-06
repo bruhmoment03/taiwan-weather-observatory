@@ -5,7 +5,7 @@ export const EMBEDS = {
   report2: { title: "報表2 學習行為與成績關聯", embedUrl: "", screenshot: "assets/report2.png", reportLink: "https://app.powerbi.com/groups/2c6378e5-06ea-4a77-8941-5a35f87efbc6/reports/819a5d55-f93d-4b6b-a632-aeba10c70618" },
   report3: { title: "報表3 影片學習行為解析",   embedUrl: "", screenshot: "assets/report3.png", reportLink: "https://app.powerbi.com/groups/2c6378e5-06ea-4a77-8941-5a35f87efbc6/reports/a3bc616b-e15e-47b3-aaf7-0bb533de6b24" },
   report4: { title: "報表4 科目與能力難點",     embedUrl: "", screenshot: "assets/report4.png", reportLink: "https://app.powerbi.com/groups/2c6378e5-06ea-4a77-8941-5a35f87efbc6/reports/82e9dfd7-34c5-48c6-9b88-2c2c09300c8d" },
-  ex1: { title: "練習一 台灣今明36小時天氣預報", embedUrl: "", screenshot: "assets/ex1.png", reportLink: "" },
+  ex1: { title: "練習一 台灣今明36小時天氣預報", embedUrl: "", screenshot: "assets/ex1.png", reportLink: "https://app.powerbi.com/groups/2c6378e5-06ea-4a77-8941-5a35f87efbc6/reports/7b3093c5-d1e6-4c8d-9b53-efe2ee990bdf" },
   ex2: { title: "練習二 台灣空氣品質監測",       embedUrl: "", screenshot: "assets/ex2.png", reportLink: "https://app.powerbi.com/groups/2c6378e5-06ea-4a77-8941-5a35f87efbc6/reports/67f2cda0-bb07-4b7e-9852-39a705f41fef" },
   ex3: { title: "練習三 顧客消費資料分析",       embedUrl: "", screenshot: "assets/ex3.png", reportLink: "https://app.powerbi.com/groups/2c6378e5-06ea-4a77-8941-5a35f87efbc6/reports/5c51405e-8985-42ae-b821-7b91c7eb8950" },
 };
