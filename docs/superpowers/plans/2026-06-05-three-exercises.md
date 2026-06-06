@@ -595,7 +595,12 @@ git -C D:\bi-final push origin main
 | 練習三 矩陣 | 金融業和房地產 1062/775/1837（image77） | 1062/775/1837，Total 2189/1816/4005 | ✅ 逐數字 |
 | 練習三 前 職業類別 卡片 | 住宿和餐飲業（image76） | 住宿和餐飲業 | ✅ |
 | 練習三 Sunburst | AppSource Sunburst（Microsoft） | **改內建樹狀圖**（AppSource 對話框無法自動化完成 Add；spec §6 備援），ex3.html 已註記 | ⚠️ 替代（數值一致） |
-| 練習一 | 地圖＋卡片＋篩選器 | **未建**——Worker 部署待 `npx wrangler login` | ⏳ BLOCKED |
+| 練習一 地圖 | 位置=縣市、圖例=PoP、泡泡=MaxT、提示=Wx（image26） | 同欄位配置（Legend=PoP 圖例渲染） | ✅ |
+| 練習一 卡片×3 | 最高溫 33／最低溫 25／平均降雨機率 30.00 | 35／24／27.27（即時資料，日期不同） | ✅ 等價 |
+| 練習一 篩選器×2＋來源 | startTime＋locationName＋CWA 來源 | 同欄位（樣式：範圍/清單 vs 清單/磚塊，外觀差異） | ✅ 等價 |
+| 練習一 排程 | 排程更新 | Daily、台北時區、8 時點（00/03/06/09/12/15/18/21），「wx refresh schedule updated」確認；初次重新整理成功 | ✅ |
 
 **測試：** node embeds 7/7、worker forecast 4/4、python 10/10 全 PASS。
 **報表連結：** 練習二 `67f2cda0-…`、練習三 `5c51405e-…`（已寫入 js/embeds.js）。
+
+**練習一補記（2026-06-06）：** Worker 部署成功（`taiwan-weather-proxy` v9d7bbf03，/forecast.csv 66 列），模型 `wx`（4c8e9f54），報表 `7b3093c5`。slicer 標頭維持欄位名 startTime（重新命名 UI 在服務版彈窗錯位，功能不受影響）。
